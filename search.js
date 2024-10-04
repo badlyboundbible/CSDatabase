@@ -8,6 +8,14 @@ fetch('data.json')
     })
     .catch(error => console.error('Error loading data:', error));
 
+// Trigger search when the Enter key is pressed
+document.getElementById('searchTerm').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();  // Prevent the form from submitting
+        search();  // Trigger the search function
+    }
+});
+
 function search() {
     const searchTerm = document.getElementById('searchTerm').value.toLowerCase();
     const resultsList = document.getElementById('results');
