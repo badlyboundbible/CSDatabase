@@ -62,9 +62,13 @@
 </head>
 <body>
     <h1>Search Case Studies</h1>
-    <input type="text" id="searchTerm" placeholder="Enter keyword" />
-    <br>
-    <button onclick="search()">Search</button>
+    
+    <!-- Add a form tag -->
+    <form id="searchForm" onsubmit="event.preventDefault(); search();">
+        <input type="text" id="searchTerm" placeholder="Enter keyword" />
+        <br>
+        <button type="button" onclick="search()">Search</button>
+    </form>
 
     <ul id="results"></ul>
 
