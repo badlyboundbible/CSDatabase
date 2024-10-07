@@ -18,13 +18,12 @@ function search() {
         return;
     }
 
-    // Search across all fields (Title, Company, Year, Keywords, Link)
+    // Search through Title, Company, Year, and Keywords
     const filteredResults = data.filter(item => 
-        item.Title.toLowerCase().includes(searchTerm) ||
-        item.Company.toLowerCase().includes(searchTerm) ||
-        item.Year.toString().includes(searchTerm) ||  // Convert year to string for searching
-        item.Keywords.toLowerCase().includes(searchTerm) ||
-        item.Link.toLowerCase().includes(searchTerm)
+        (item.Title && item.Title.toLowerCase().includes(searchTerm)) ||
+        (item.Company && item.Company.toLowerCase().includes(searchTerm)) ||
+        (item.Year && item.Year.toString().includes(searchTerm)) ||  // Convert Year to string
+        (item.Keywords && item.Keywords.toLowerCase().includes(searchTerm))
     );
 
     if (filteredResults.length === 0) {
