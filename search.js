@@ -46,26 +46,23 @@ function search() {
     // Split the search term into multiple terms
     const searchTerms = searchTerm.split(' ');
 
-    // Filter the results based on whether the search term matches anywhere in the row or by date range
+    // Filter the results based on whether any search term matches
     const filteredResults = data.filter(item => {
         // Convert the entire row into a single string for matching, including explicitly checking the Keywords column
         const rowData = Object.values(item).join(' ').toLowerCase();
         const keywordData = item[keywordColumn] ? item[keywordColumn].toLowerCase() : '';
         const yearStr = item.year ? item.year.toString() : '';
 
-        // Return true only if all search terms match
-        return searchTerms.every(term => {
+        // Return true if any of the search terms match (use some())
+        return searchTerms.some(term => {
             // Handle date range search (e.g., "2000-2020")
             if (term.includes('-')) {
                 const [startYear, endYear] = term.split('-').map(Number);  // Split into start and end years
                 const itemYear = parseInt(item.year);  // Convert the item year to an integer
-                if (!isNaN(itemYear) && itemYear >= startYear && itemYear <= endYear) {
-                    return true;  // Include the item if its year is within the range
-                }
-                return false;  // If it's a date range and doesn't match, exclude it
+                return !isNaN(itemYear) && itemYear >= startYear && itemYear <= endYear;
             }
 
-            // If it's not a date range, check if the term matches any part of the row or keywords
+            // If it's not a date range, check if the term matches any part of the row, keywords, or year
             return rowData.includes(term) || keywordData.includes(term) || yearStr.includes(term);
         });
     });
