@@ -1,4 +1,5 @@
 let data = [];
+let keywordColumn = '';  // For manually tracking the Keywords column
 
 // Load the CSV data from SharePoint when the page loads
 fetch('https://dmail-my.sharepoint.com/personal/dmillar002_dundee_ac_uk/_layouts/15/download.aspx?share=EcgM853u6h5Mnl83NXE7ICQB79gz3WbMgAS1xm4pN74hzA')
@@ -13,6 +14,13 @@ fetch('https://dmail-my.sharepoint.com/personal/dmillar002_dundee_ac_uk/_layouts
 function parseCSV(csvText) {
     const lines = csvText.split('\n');
     const headers = lines[0].split(',');  // First row is the header
+
+    headers.forEach((header, index) => {
+        if (header.trim().toLowerCase() === 'keywords') {
+            keywordColumn = header.trim().toLowerCase();  // Track the keywords column explicitly
+        }
+    });
+
     const rows = lines.slice(1);  // All subsequent rows are data
 
     return rows.map(row => {
@@ -37,9 +45,12 @@ function search() {
 
     // Filter the results based on whether the search term matches anywhere in the row
     const filteredResults = data.filter(item => {
-        // Convert the entire row into a single string for matching
+        // Convert the entire row into a single string for matching, including explicitly checking the Keywords column
         const rowData = Object.values(item).join(' ').toLowerCase();
-        return rowData.includes(searchTerm);
+        const keywordData = item[keywordColumn] ? item[keywordColumn].toLowerCase() : '';
+
+        // Check if the search term matches either the entire row or specifically the Keywords
+        return rowData.includes(searchTerm) || keywordData.includes(searchTerm);
     });
 
     // Display the results
