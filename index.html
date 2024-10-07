@@ -65,12 +65,12 @@
 <body>
     <h1>Search Case Studies</h1>
     
-    <!-- Add a form tag -->
+    <!-- Search and Surprise Me button -->
     <form id="searchForm" onsubmit="event.preventDefault(); search();">
         <input type="text" id="searchTerm" placeholder="Enter keyword" />
         <br>
         <button type="button" onclick="search()">Search</button>
-        <button type="button" onclick="surpriseMe()">Surprise me!</button> <!-- New Surprise button -->
+        <button type="button" id="surpriseBtn">Surprise me!</button> <!-- Button without onclick directly -->
     </form>
 
     <ul id="results"></ul>
