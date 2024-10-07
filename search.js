@@ -21,13 +21,13 @@ function search() {
     // Split the search input into multiple terms
     const searchTerms = searchTerm.split(' ');
 
-    // Filter the results based on each search term across all fields
+    // Filter the results based on whether ANY search term matches in ANY field
     const filteredResults = data.filter(item => {
         // Convert the Year to a string for searching
         const yearStr = item.Year ? item.Year.toString() : '';
 
-        // Check each search term across all fields
-        return searchTerms.every(term => {
+        // Check if ANY of the search terms match in ANY field
+        return searchTerms.some(term => {
             // Handle Year range search (e.g., "2006-2010")
             if (term.includes('-')) {
                 const [start, end] = term.split('-').map(Number);  // Split the range and convert to numbers
