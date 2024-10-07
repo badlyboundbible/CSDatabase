@@ -34,13 +34,15 @@ function search() {
         return;
     }
 
-    const searchTerms = searchTerm.split(' ');
+    const searchTerms = searchTerm.split(' ');  // Split search terms by spaces
 
-    // Filter the results based on whether ANY search term matches in ANY field
+    // Filter the results based on whether any part of the term matches in any field
     const filteredResults = data.filter(item => {
         const yearStr = item.Year ? item.Year.toString() : '';
 
+        // Check if ANY search term matches any field (partial match)
         return searchTerms.some(term => {
+            // Handle Year range search (e.g., "2006-2010")
             if (term.includes('-')) {
                 const [start, end] = term.split('-').map(Number);  // Split the range and convert to numbers
                 const itemYear = parseInt(item.Year);
@@ -55,6 +57,7 @@ function search() {
         });
     });
 
+    // Display the results
     if (filteredResults.length === 0) {
         resultsList.innerHTML = '<li>No results found.</li>';
     } else {
