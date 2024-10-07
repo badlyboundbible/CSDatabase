@@ -35,16 +35,11 @@ function search() {
         return;
     }
 
-    const searchTerms = searchTerm.split(' ');  // Split search terms by spaces
-
-    // Filter the results based on whether any search term matches any field
+    // Filter the results based on whether the search term matches anywhere in the row
     const filteredResults = data.filter(item => {
-        // Check all fields in the row for a match
-        return searchTerms.some(term => {
-            return Object.values(item).some(value => 
-                value && value.toLowerCase().includes(term)
-            );
-        });
+        // Convert the entire row into a single string for matching
+        const rowData = Object.values(item).join(' ').toLowerCase();
+        return rowData.includes(searchTerm);
     });
 
     // Display the results
