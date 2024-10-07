@@ -43,6 +43,9 @@ function search() {
         return;
     }
 
+    // Split the search term into multiple terms
+    const searchTerms = searchTerm.split(' ');
+
     // Filter the results based on whether the search term matches anywhere in the row or by date range
     const filteredResults = data.filter(item => {
         // Convert the entire row into a single string for matching, including explicitly checking the Keywords column
@@ -50,17 +53,21 @@ function search() {
         const keywordData = item[keywordColumn] ? item[keywordColumn].toLowerCase() : '';
         const yearStr = item.year ? item.year.toString() : '';
 
-        // Check if the search term contains a date range (e.g., "2000-2020")
-        if (searchTerm.includes('-')) {
-            const [startYear, endYear] = searchTerm.split('-').map(Number);  // Split into start and end years
-            const itemYear = parseInt(item.year);  // Convert the item year to an integer
-            if (!isNaN(itemYear) && itemYear >= startYear && itemYear <= endYear) {
-                return true;  // Include the item if its year is within the range
+        // Check each search term (multi-term support)
+        return searchTerms.every(term => {
+            // Handle date range search (e.g., "2000-2020")
+            if (term.includes('-')) {
+                const [startYear, endYear] = term.split('-').map(Number);  // Split into start and end years
+                const itemYear = parseInt(item.year);  // Convert the item year to an integer
+                if (!isNaN(itemYear) && itemYear >= startYear && itemYear <= endYear) {
+                    return true;  // Include the item if its year is within the range
+                }
+                return false;  // If a term is a date range but doesn't match, exclude it
             }
-        }
 
-        // Check if the search term matches the entire row or specifically the Keywords
-        return rowData.includes(searchTerm) || keywordData.includes(searchTerm);
+            // If it's not a date range, check if the term matches any part of the row or keywords
+            return rowData.includes(term) || keywordData.includes(term);
+        });
     });
 
     // Display the results
