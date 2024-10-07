@@ -18,24 +18,18 @@ function search() {
         return;
     }
 
-    // Split the search input into multiple terms
     const searchTerms = searchTerm.split(' ');
 
-    // Filter the results based on whether ANY search term matches in ANY field
     const filteredResults = data.filter(item => {
-        // Convert the Year to a string for searching
         const yearStr = item.Year ? item.Year.toString() : '';
 
-        // Check if ANY of the search terms match in ANY field
         return searchTerms.some(term => {
-            // Handle Year range search (e.g., "2006-2010")
             if (term.includes('-')) {
-                const [start, end] = term.split('-').map(Number);  // Split the range and convert to numbers
-                const itemYear = parseInt(item.Year);  // Convert the item's Year to an integer
+                const [start, end] = term.split('-').map(Number);
+                const itemYear = parseInt(item.Year);
                 return itemYear >= start && itemYear <= end;
             }
 
-            // Otherwise, search in all fields (Title, Company, Year, Keywords)
             return (item.Title && item.Title.toLowerCase().includes(term)) ||
                    (item.Company && item.Company.toLowerCase().includes(term)) ||
                    (yearStr.includes(term)) ||
@@ -43,7 +37,6 @@ function search() {
         });
     });
 
-    // Display the results
     if (filteredResults.length === 0) {
         resultsList.innerHTML = '<li>No results found.</li>';
     } else {
@@ -56,4 +49,27 @@ function search() {
             resultsList.appendChild(listItem);
         });
     }
+}
+
+// Function to display a random result
+function surpriseMe() {
+    const resultsList = document.getElementById('results');
+    resultsList.innerHTML = '';  // Clear previous results
+
+    if (data.length === 0) {
+        resultsList.innerHTML = '<li>No data available.</li>';
+        return;
+    }
+
+    // Pick a random item from the data
+    const randomIndex = Math.floor(Math.random() * data.length);
+    const randomResult = data[randomIndex];
+
+    // Display the random result
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<strong>Title:</strong> ${randomResult.Title} <br>
+                          <strong>Company:</strong> ${randomResult.Company} <br>
+                          <strong>Year:</strong> ${randomResult.Year} <br>
+                          <strong><a href="${randomResult.Link}" target="_blank">Access Case Study</a></strong>`;
+    resultsList.appendChild(listItem);
 }
