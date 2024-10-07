@@ -5,6 +5,7 @@ fetch('https://dmail-my.sharepoint.com/personal/dmillar002_dundee_ac_uk/_layouts
     .then(response => response.text())  // Get the CSV data as plain text
     .then(csvText => {
         data = parseCSV(csvText);  // Convert CSV to JSON format
+        console.log("Parsed Data: ", data);  // Log the parsed data for debugging
     })
     .catch(error => console.error('Error loading data from SharePoint:', error));
 
@@ -48,6 +49,9 @@ function search() {
                 const itemYear = parseInt(item.Year);
                 return itemYear >= start && itemYear <= end;
             }
+
+            // Log the keyword value for debugging
+            console.log("Keywords Field: ", item.Keywords);
 
             // Check for partial matches in all relevant fields (Title, Company, Year, Keywords)
             return (item.Title && item.Title.toLowerCase().includes(term)) ||
