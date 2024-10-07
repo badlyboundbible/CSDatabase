@@ -5,7 +5,8 @@ fetch('https://dmail-my.sharepoint.com/personal/dmillar002_dundee_ac_uk/_layouts
     .then(response => response.text())  // Get the CSV data as plain text
     .then(csvText => {
         data = parseCSV(csvText);  // Convert CSV to JSON format
-        console.log("Parsed Data: ", data);  // Log the parsed data for debugging
+        console.log("Parsed Data: ", data);  // Log the parsed data to inspect it
+        logHeaders(data);  // Log headers and first item to verify fields
     })
     .catch(error => console.error('Error loading data from SharePoint:', error));
 
@@ -23,6 +24,17 @@ function parseCSV(csvText) {
         });
         return result;
     });
+}
+
+// Function to log headers and first item to inspect field names
+function logHeaders(data) {
+    if (data.length > 0) {
+        const firstItem = data[0];
+        console.log("Headers and First Item:", firstItem);
+        console.log("Keywords Field:", firstItem.Keywords);  // Log Keywords field
+    } else {
+        console.log("No data available.");
+    }
 }
 
 function search() {
@@ -50,8 +62,11 @@ function search() {
                 return itemYear >= start && itemYear <= end;
             }
 
-            // Log the keyword value for debugging
-            console.log("Keywords Field: ", item.Keywords);
+            // Log each field being searched for debugging
+            console.log("Searching in Title:", item.Title);
+            console.log("Searching in Company:", item.Company);
+            console.log("Searching in Year:", yearStr);
+            console.log("Searching in Keywords:", item.Keywords);
 
             // Check for partial matches in all relevant fields (Title, Company, Year, Keywords)
             return (item.Title && item.Title.toLowerCase().includes(term)) ||
