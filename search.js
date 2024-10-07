@@ -73,3 +73,6 @@ function surpriseMe() {
                           <strong><a href="${randomResult.Link}" target="_blank">Access Case Study</a></strong>`;
     resultsList.appendChild(listItem);
 }
+
+// Add event listener for the "Surprise me!" button
+document.getElementById('surpriseBtn').addEventListener('click', surpriseMe);
