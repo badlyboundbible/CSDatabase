@@ -43,13 +43,23 @@ function search() {
         return;
     }
 
-    // Filter the results based on whether the search term matches anywhere in the row
+    // Filter the results based on whether the search term matches anywhere in the row or by date range
     const filteredResults = data.filter(item => {
         // Convert the entire row into a single string for matching, including explicitly checking the Keywords column
         const rowData = Object.values(item).join(' ').toLowerCase();
         const keywordData = item[keywordColumn] ? item[keywordColumn].toLowerCase() : '';
+        const yearStr = item.year ? item.year.toString() : '';
 
-        // Check if the search term matches either the entire row or specifically the Keywords
+        // Check if the search term contains a date range (e.g., "2000-2020")
+        if (searchTerm.includes('-')) {
+            const [startYear, endYear] = searchTerm.split('-').map(Number);  // Split into start and end years
+            const itemYear = parseInt(item.year);  // Convert the item year to an integer
+            if (!isNaN(itemYear) && itemYear >= startYear && itemYear <= endYear) {
+                return true;  // Include the item if its year is within the range
+            }
+        }
+
+        // Check if the search term matches the entire row or specifically the Keywords
         return rowData.includes(searchTerm) || keywordData.includes(searchTerm);
     });
 
