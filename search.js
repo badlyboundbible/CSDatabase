@@ -1,48 +1,28 @@
 let data = [];
-let keywordColumn = '';
 
 // Load the CSV data from SharePoint when the page loads
 fetch('https://dmail-my.sharepoint.com/personal/dmillar002_dundee_ac_uk/_layouts/15/download.aspx?share=EcgM853u6h5Mnl83NXE7ICQB79gz3WbMgAS1xm4pN74hzA')
     .then(response => response.text())  // Get the CSV data as plain text
     .then(csvText => {
         data = parseCSV(csvText);  // Convert CSV to JSON format
-        logHeaders(data);  // Log headers and first item to verify fields
+        console.log("Parsed Data: ", data);  // Log the parsed data to inspect it
     })
     .catch(error => console.error('Error loading data from SharePoint:', error));
 
 // Function to parse CSV data into an array of objects (similar to JSON format)
 function parseCSV(csvText) {
     const lines = csvText.split('\n');
-    let headers = lines[0].split(',');  // First row is the header
-
-    // Trim and normalize headers to avoid issues with spacing or case
-    headers = headers.map(header => header.trim().toLowerCase());
-
-    // Identify the correct Keywords column (look for variations)
-    keywordColumn = headers.includes('keywords') ? 'keywords' : headers.find(header => header.includes('keyword'));
-
+    const headers = lines[0].split(',');  // First row is the header
     const rows = lines.slice(1);  // All subsequent rows are data
 
     return rows.map(row => {
         const values = row.split(',');
         const result = {};
         headers.forEach((header, index) => {
-            result[header] = values[index] ? values[index].trim() : '';  // Assign values to corresponding headers
+            result[header.trim().toLowerCase()] = values[index].trim();  // Assign values to corresponding headers
         });
         return result;
     });
-}
-
-// Function to log headers and first item to inspect field names
-function logHeaders(data) {
-    if (data.length > 0) {
-        const firstItem = data[0];
-        console.log("Headers and First Item:", firstItem);
-        console.log("Keywords Field Detected As:", keywordColumn);
-        console.log("Keywords Field Data:", firstItem[keywordColumn]);
-    } else {
-        console.log("No data available.");
-    }
 }
 
 function search() {
@@ -57,23 +37,13 @@ function search() {
 
     const searchTerms = searchTerm.split(' ');  // Split search terms by spaces
 
-    // Filter the results based on whether any part of the term matches in any field
+    // Filter the results based on whether any search term matches any field
     const filteredResults = data.filter(item => {
-        const yearStr = item.year ? item.year.toString() : '';
-
-        // Check if ANY search term matches any field (partial match)
+        // Check all fields in the row for a match
         return searchTerms.some(term => {
-            if (term.includes('-')) {
-                const [start, end] = term.split('-').map(Number);  // Split the range and convert to numbers
-                const itemYear = parseInt(item.year);
-                return itemYear >= start && itemYear <= end;
-            }
-
-            // Check for partial matches in all relevant fields (Title, Company, Year, Keywords)
-            return (item.title && item.title.toLowerCase().includes(term)) ||
-                   (item.company && item.company.toLowerCase().includes(term)) ||
-                   (yearStr.includes(term)) ||
-                   (item[keywordColumn] && item[keywordColumn].toLowerCase().includes(term));  // Dynamically check Keywords column
+            return Object.values(item).some(value => 
+                value && value.toLowerCase().includes(term)
+            );
         });
     });
 
@@ -83,11 +53,37 @@ function search() {
     } else {
         filteredResults.forEach(result => {
             const listItem = document.createElement('li');
-            listItem.innerHTML = `<strong>Title:</strong> ${result.title} <br>
-                                  <strong>Company:</strong> ${result.company} <br>
-                                  <strong>Year:</strong> ${result.year} <br>
-                                  <strong><a href="${result.link}" target="_blank">Access Case Study</a></strong>`;
+            listItem.innerHTML = `<strong>Title:</strong> ${result.title || ''} <br>
+                                  <strong>Company:</strong> ${result.company || ''} <br>
+                                  <strong>Year:</strong> ${result.year || ''} <br>
+                                  <strong><a href="${result.link || '#'}" target="_blank">Access Case Study</a></strong>`;
             resultsList.appendChild(listItem);
         });
     }
 }
+
+// Function to display a random result
+function surpriseMe() {
+    const resultsList = document.getElementById('results');
+    resultsList.innerHTML = '';  // Clear previous results
+
+    if (data.length === 0) {
+        resultsList.innerHTML = '<li>No data available.</li>';
+        return;
+    }
+
+    // Pick a random item from the data
+    const randomIndex = Math.floor(Math.random() * data.length);
+    const randomResult = data[randomIndex];
+
+    // Display the random result
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<strong>Title:</strong> ${randomResult.title || ''} <br>
+                          <strong>Company:</strong> ${randomResult.company || ''} <br>
+                          <strong>Year:</strong> ${randomResult.year || ''} <br>
+                          <strong><a href="${randomResult.link || '#'}" target="_blank">Access Case Study</a></strong>`;
+    resultsList.appendChild(listItem);
+}
+
+// Add event listener for the "Surprise me!" button
+document.getElementById('surpriseBtn').addEventListener('click', surpriseMe);
