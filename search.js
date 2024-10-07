@@ -53,7 +53,7 @@ function search() {
         const keywordData = item[keywordColumn] ? item[keywordColumn].toLowerCase() : '';
         const yearStr = item.year ? item.year.toString() : '';
 
-        // Check each search term (multi-term support)
+        // Return true only if all search terms match
         return searchTerms.every(term => {
             // Handle date range search (e.g., "2000-2020")
             if (term.includes('-')) {
@@ -62,11 +62,11 @@ function search() {
                 if (!isNaN(itemYear) && itemYear >= startYear && itemYear <= endYear) {
                     return true;  // Include the item if its year is within the range
                 }
-                return false;  // If a term is a date range but doesn't match, exclude it
+                return false;  // If it's a date range and doesn't match, exclude it
             }
 
             // If it's not a date range, check if the term matches any part of the row or keywords
-            return rowData.includes(term) || keywordData.includes(term);
+            return rowData.includes(term) || keywordData.includes(term) || yearStr.includes(term);
         });
     });
 
