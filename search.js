@@ -18,23 +18,24 @@ function search() {
         return;
     }
 
-    // Split search terms by space to support multi-term search
+    // Split the search input into multiple terms
     const searchTerms = searchTerm.split(' ');
 
-    // Filter results by checking search terms in Title, Company, Year, Keywords, and handling Year ranges
+    // Filter the results based on each search term across all fields
     const filteredResults = data.filter(item => {
         // Convert the Year to a string for searching
         const yearStr = item.Year ? item.Year.toString() : '';
 
         // Check each search term across all fields
         return searchTerms.every(term => {
-            // Check for Year range if the term contains a dash, e.g., "2006-2010"
+            // Handle Year range search (e.g., "2006-2010")
             if (term.includes('-')) {
                 const [start, end] = term.split('-').map(Number);  // Split the range and convert to numbers
-                const itemYear = parseInt(item.Year);  // Convert item Year to integer
+                const itemYear = parseInt(item.Year);  // Convert the item's Year to an integer
                 return itemYear >= start && itemYear <= end;
             }
-            // Otherwise, check the term in all fields (Title, Company, Year, Keywords)
+
+            // Otherwise, search in all fields (Title, Company, Year, Keywords)
             return (item.Title && item.Title.toLowerCase().includes(term)) ||
                    (item.Company && item.Company.toLowerCase().includes(term)) ||
                    (yearStr.includes(term)) ||
