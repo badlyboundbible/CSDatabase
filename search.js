@@ -8,14 +8,6 @@ fetch('data.json')
     })
     .catch(error => console.error('Error loading data:', error));
 
-// Trigger search when the Enter key is pressed
-document.getElementById('searchTerm').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();  // Prevent the form from submitting
-        search();  // Trigger the search function
-    }
-});
-
 function search() {
     const searchTerm = document.getElementById('searchTerm').value.toLowerCase();
     const resultsList = document.getElementById('results');
@@ -26,8 +18,13 @@ function search() {
         return;
     }
 
+    // Search across all fields (Title, Company, Year, Keywords, Link)
     const filteredResults = data.filter(item => 
-        item.Keywords.toLowerCase().includes(searchTerm)
+        item.Title.toLowerCase().includes(searchTerm) ||
+        item.Company.toLowerCase().includes(searchTerm) ||
+        item.Year.toString().includes(searchTerm) ||  // Convert year to string for searching
+        item.Keywords.toLowerCase().includes(searchTerm) ||
+        item.Link.toLowerCase().includes(searchTerm)
     );
 
     if (filteredResults.length === 0) {
